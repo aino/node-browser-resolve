@@ -5,18 +5,18 @@ var path = require('path');
 // vendor
 var resv = require('resolve');
 
-// given a path, create an array of node_module paths for it
+// given a path, create an array of module paths for it
 // borrowed from substack/resolve
-function nodeModulesPaths (start, cb) {
+function modulesPaths (start, opts) {
     var splitRe = process.platform === 'win32' ? /[\/\\]/ : /\/+/;
     var parts = start.split(splitRe);
 
     var dirs = [];
     for (var i = parts.length - 1; i >= 0; i--) {
-        if (parts[i] === 'node_modules') continue;
+        if (parts[i] === opts.modulesDir) continue;
         var dir = path.join(
             path.join.apply(path, parts.slice(0, i + 1)),
-            'node_modules'
+            opts.modulesDir
         );
         if (!parts[0].match(/([A-Za-z]:)/)) {
             dir = '/' + dir;
@@ -112,11 +112,15 @@ function resolve(id, opts, cb) {
     // opts.paths
     // opts.modules
     // opts.packageFilter
+    // opts.modulesDir
+    // opts.manifest
 
     opts = opts || {};
+    opts.modulesDir = opts.modulesDir || 'node_modules';
+    opts.manifest = opts.manifest || 'package.json';
 
     var base = path.dirname(opts.filename);
-    var paths = nodeModulesPaths(base);
+    var paths = modulesPaths(base, opts);
 
     if (opts.paths) {
         paths.push.apply(paths, opts.paths);
@@ -155,6 +159,8 @@ function resolve(id, opts, cb) {
             extensions: opts.extensions,
             basedir: base,
             package: opts.package,
+            moduleDirectory: opts.modulesDir,
+            manifest: opts.manifest,
             packageFilter: function(info) {
                 if (opts.packageFilter) info = opts.packageFilter(info);
 

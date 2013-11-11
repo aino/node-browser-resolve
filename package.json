@@ -17,7 +17,7 @@
   "author": "Roman Shtylman <shtylman@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "resolve": "0.5.1"
+    "resolve": "git+ssh://git@github.com:aino/node-resolve.git#c23359f96a"
   },
   "devDependencies": {
     "mocha": "1.12.0"
